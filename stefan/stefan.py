@@ -1,4 +1,6 @@
 from firedrake import *
+from datetime import datetime
+
 Nx = 60
 Ny = 10
 nref = 4
@@ -90,6 +92,10 @@ T_.assign(ic)
 pphi = Function(V).assign(phi)
 
 bcs = DirichletBC(V, Constant(T_l), 1)
+
+snes_atol = 1.0e-9
+snes_rtol = 1.0e-9
+
 mg =  {"snes_type": "newtonls",
                  "snes_monitor": None,
                  "snes_converged_reason": None, 
@@ -123,55 +129,120 @@ mg_patch = {"snes_type": "newtonls",
                  "mg_coarse_pc_type": "lu",
                  "mg_coarse_pc_factor_mat_solver_type": "mumps"}
 
-faspardecomp  = {
+ngmresfasstar  = {
        "mat_type": "matfree",
-       "snes_type": "fas",
-       "snes_fas_cycles": 1,
-       "snes_fas_type": "full",
-       "snes_fas_galerkin": False,
-       "snes_fas_smoothup": 1,
-       "snes_fas_smoothdown": 1,
-       "snes_fas_full_downsweep": False,
+       "snes_type": "ngmres",
        "snes_monitor": None,
-       "snes_converged_reason": None,
        "snes_max_it": 100,
-       "fas_levels_snes_type": "python",
-       "fas_levels_snes_python_type": "firedrake.PatchSNES",
-       "fas_levels_snes_max_it": 1,
-       "fas_levels_snes_convergence_test": "skip",
-       #"fas_levels_snes_converged_reason": None,
-       #"fas_levels_snes_monitor": None,
-       "fas_levels_snes_linesearch_type": "basic",
-       "fas_levels_snes_linesearch_damping": 1.0,
-       "fas_levels_patch_snes_patch_construct_type": "pardecomp",
-       "fas_levels_patch_snes_patch_partition_of_unity": True,
-       "fas_levels_patch_snes_patch_pardecomp_overlap": 1,
-       "fas_levels_patch_snes_patch_sub_mat_type": "seqaij",
-       "fas_levels_patch_snes_patch_local_type": "additive",
-       "fas_levels_patch_snes_patch_symmetrise_sweep": False,
-       "fas_levels_patch_sub_snes_type": "newtonls",
-       #"fas_levels_patch_sub_snes_monitor": None,
-       #"fas_levels_patch_sub_snes_converged_reason": None,
-       "fas_levels_patch_sub_snes_linesearch_type": "basic",
-       "fas_levels_patch_sub_ksp_type": "preonly",
-       "fas_levels_patch_sub_pc_type": "lu",
-       "fas_coarse_snes_type": "newtonls",
-       "fas_coarse_snes_monitor": None,
-       "fas_coarse_snes_converged_reason": None,
-       "fas_coarse_snes_max_it": 100,
-       "fas_coarse_snes_atol": 1.0e-14,
-       "fas_coarse_snes_rtol": 1.0e-14,
-       "fas_coarse_snes_linesearch_type": "l2",
-       "fas_coarse_ksp_type": "preonly",
-       "fas_coarse_ksp_max_it": 1,
-       "fas_coarse_pc_type": "python",
-       "fas_coarse_pc_python_type": "firedrake.AssembledPC",
-       "fas_coarse_assembled_mat_type": "aij",
-       "fas_coarse_assembled_pc_type": "lu",
-       "fas_coarse_assembled_pc_factor_mat_solver_type": "mumps",
+       "snes_npc_side": "right",
+       "snes_atol": snes_atol,
+       "snes_rtol": snes_rtol,
+       "snes_converged_reason": None,
+       "npc_snes_type": "fas",
+       "npc_snes_fas_cycles": 1,
+       "npc_snes_fas_type": "kaskade",
+       "npc_snes_fas_galerkin": False,
+       "npc_snes_fas_full_downsweep": False,
+       #"npc_snes_monitor": None,
+       "npc_snes_max_it": 1,
+       "npc_fas_levels_snes_type": "python",
+       "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
+       "npc_fas_levels_snes_max_it": 1,
+       "npc_fas_levels_snes_convergence_test": "skip",
+       #"npc_fas_levels_snes_converged_reason": None,
+       #"npc_fas_levels_snes_monitor": None,
+       "npc_fas_levels_snes_linesearch_type": "basic",
+       "npc_fas_levels_snes_linesearch_damping": 1.0,
+       "npc_fas_levels_patch_snes_patch_construct_type": "star",
+       "npc_fas_levels_patch_snes_patch_partition_of_unity": True,
+       "npc_fas_levels_patch_snes_patch_sub_mat_type": "seqaij",
+       "npc_fas_levels_patch_snes_patch_local_type": "additive",
+       "npc_fas_levels_patch_snes_patch_symmetrise_sweep": False,
+       "npc_fas_levels_patch_sub_snes_type": "newtonls",
+       #"npc_fas_levels_patch_sub_snes_monitor": None,
+       "npc_fas_levels_patch_sub_snes_atol": 1.0e-11,
+       "npc_fas_levels_patch_sub_snes_rtol": 1.0e-11,
+       #"npc_fas_levels_patch_sub_snes_converged_reason": None,
+       "npc_fas_levels_patch_sub_snes_linesearch_type": "basic",
+       "npc_fas_levels_patch_sub_ksp_type": "preonly",
+       "npc_fas_levels_patch_sub_pc_type": "lu",
+       "npc_fas_coarse_snes_type": "newtonls",
+       #"npc_fas_coarse_snes_monitor": None,
+       #"npc_fas_coarse_snes_converged_reason": None,
+       "npc_fas_coarse_snes_max_it": 100,
+       "npc_fas_coarse_snes_atol": 1.0e-14,
+       "npc_fas_coarse_snes_rtol": 1.0e-14,
+       "npc_fas_coarse_snes_linesearch_type": "l2",
+       "npc_fas_coarse_ksp_type": "preonly",
+       "npc_fas_coarse_ksp_max_it": 1,
+       "npc_fas_coarse_pc_type": "python",
+       "npc_fas_coarse_pc_python_type": "firedrake.AssembledPC",
+       "npc_fas_coarse_assembled_mat_type": "aij",
+       "npc_fas_coarse_assembled_pc_type": "lu",
+       "npc_fas_coarse_assembled_pc_factor_mat_solver_type": "mumps",
       }
 
-solvers = {"lu": lu, "mg": mg, "mg_patch": mg_patch, "faspardecomp": faspardecomp}
+ngmresfaspardecomp  = {
+       "mat_type": "matfree",
+       "snes_type": "ngmres",
+       "snes_monitor": None,
+       "snes_max_it": 100,
+       "snes_npc_side": "right",
+       "snes_atol": snes_atol,
+       "snes_rtol": snes_rtol,
+       "snes_converged_reason": None,
+       "npc_snes_type": "fas",
+       "npc_snes_fas_cycles": 1,
+       "npc_snes_fas_type": "kaskade",
+       "npc_snes_fas_galerkin": False,
+       "npc_snes_fas_full_downsweep": False,
+       "npc_snes_monitor": None,
+       "npc_snes_max_it": 1,
+       "npc_fas_levels_snes_type": "python",
+       "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
+       "npc_fas_levels_snes_max_it": 1,
+       "npc_fas_levels_snes_convergence_test": "skip",
+       "npc_fas_levels_snes_converged_reason": None,
+       "npc_fas_levels_snes_monitor": None,
+       "npc_fas_levels_snes_linesearch_type": "basic",
+       "npc_fas_levels_snes_linesearch_damping": 1.0,
+       "npc_fas_levels_patch_snes_patch_construct_type": "pardecomp",
+       "npc_fas_levels_patch_snes_patch_pardecomp_overlap": 1,
+       "npc_fas_levels_patch_snes_patch_partition_of_unity": True,
+       "npc_fas_levels_patch_snes_patch_sub_mat_type": "seqaij",
+       "npc_fas_levels_patch_snes_patch_local_type": "additive",
+       "npc_fas_levels_patch_snes_patch_symmetrise_sweep": False,
+       "npc_fas_levels_patch_sub_snes_type": "newtonls",
+       "npc_fas_levels_patch_sub_snes_monitor": None,
+       "npc_fas_levels_patch_sub_snes_atol": 1.0e-10,
+       "npc_fas_levels_patch_sub_snes_rtol": 1.0e-10,
+       "npc_fas_levels_patch_sub_snes_stol": 0.0,
+       "npc_fas_levels_patch_sub_snes_converged_reason": None,
+       "npc_fas_levels_patch_sub_snes_linesearch_type": "basic",
+       "npc_fas_levels_patch_sub_ksp_type": "preonly",
+       "npc_fas_levels_patch_sub_pc_type": "lu",
+       "npc_fas_levels_patch_sub_pc_factor_mat_solver_type": "umfpack",
+       "npc_fas_coarse_snes_type": "newtonls",
+       "npc_fas_coarse_snes_monitor": None,
+       "npc_fas_coarse_snes_converged_reason": None,
+       "npc_fas_coarse_snes_max_it": 100,
+       "npc_fas_coarse_snes_atol": 1.0e-14,
+       "npc_fas_coarse_snes_rtol": 1.0e-14,
+       "npc_fas_coarse_snes_linesearch_type": "l2",
+       "npc_fas_coarse_ksp_type": "preonly",
+       "npc_fas_coarse_ksp_max_it": 1,
+       "npc_fas_coarse_pc_type": "python",
+       "npc_fas_coarse_pc_python_type": "firedrake.AssembledPC",
+       "npc_fas_coarse_assembled_mat_type": "aij",
+       "npc_fas_coarse_assembled_pc_type": "lu",
+       "npc_fas_coarse_assembled_pc_factor_mat_solver_type": "mumps",
+      }
+
+solvers = {"lu": lu,
+           "mg": mg,
+           "mg_patch": mg_patch,
+           "ngmresfaspardecomp": ngmresfaspardecomp,
+           "ngmresfasstar": ngmresfasstar}
 import argparse
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument("--solver-type", choices=list(solvers.keys()), required=True)
@@ -194,7 +265,10 @@ t = 0.0
 T_final = 1*dt.values()[0]
 while(t<T_final):
     if mesh.comm.rank == 0: print("Initial time: ", t)
+    start = datetime.now()
     solver.solve()
+    end = datetime.now()
+    print("Time taken: %s" % (end-start).total_seconds())
     T_.assign(T)
     outfileT.write(T_)
     pphi.assign(phi)
