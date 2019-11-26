@@ -1,94 +1,6 @@
 from firedrake import *
 from datetime import datetime
 
-Nx = 60
-Ny = 10
-nref = 4
-distribution_parameters={"partition": True, "overlap_type": (DistributedMeshOverlapType.VERTEX, 2)}
-base = RectangleMesh(Nx, Ny, 2.0, 1.0,distribution_parameters=distribution_parameters)
-mh = MeshHierarchy(base, nref, distribution_parameters=distribution_parameters)
-mesh = mh[-1]
-
-V = FunctionSpace(mesh, "CG", 3)
-dim = V.dim()
-if mesh.comm.rank == 0: print("V.dim(): %s" % dim)
-#Vdg = FunctionSpace(mesh, "DG", 1)
-
-T = Function(V)
-T_ = Function(V)
-s = TestFunction(V)
-
-x, y = SpatialCoordinate(mesh)
-
-# Physical parameters
-rho_l = 1.0
-rho_s = 0.92 #1.0
-#rho_s = 1.0
-c_s = 0.5 #1.0
-#c_s = 1.0
-c_l = 1.0
-L = 70.26 # Latent heat fusion
-K_s = 1.08
-K_l = 0.26 #1.08
-#K_l = 1.08
-T_l = -45.
-T_r = -0.15
-T0 = 4. # 0.0
-
-r = 0.1
-epsilon = 0.01
-
-f_s = Constant(0)
-f_l = Constant(0)
-
-def phi_tanh(T):
-    rd = r
-    return 0.5*(1 + tanh((T-T_r)/rd))
-
-def phi_interp(T):
-    def interp(T):
-        return (T-T_r + epsilon)/(2*epsilon)
-    return conditional(gt(T, T_r + epsilon), 1.0, conditional(lt(T, T_r - epsilon), 0.0, interp(T)))
-    
-    
-def phi_heavi(T):
-    return conditional(gt(T,T_r), 1.0, 0.0)
-
-phi_reg = phi_tanh
-
-phi = phi_reg(T)
-phi_ = phi_reg(T_)
-
-#phi = Constant(1.0)
-#phi_ = Constant(1.0)
-
-
-alpha = rho_s*c_s + phi*(rho_l*c_l - rho_s*c_s)
-kappa = K_s + phi*(K_l - K_s)
-f = f_s + phi*(f_l-f_s)
-
-
-
-dt = Constant(0.25)
-
-a_time = alpha*(T - T_)/dt*s*dx
-a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
-a_diff = inner(kappa*grad(T), grad(s))*dx
-F = a_time + a_phase + a_diff - f*s*dx
-#F = a_time + a_diff
-
-#ic = Function(V).interpolate(conditional(gt(x,0.5),T_l,))
-#ic = Constant(T0)
-ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-5*x)))
-
-#iguess = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-2*x)))
-#iguess = ic
-T.assign(ic)
-T_.assign(ic)
-pphi = Function(V).assign(phi)
-
-bcs = DirichletBC(V, Constant(T_l), 1)
-
 snes_atol = 1.0e-9
 snes_rtol = 1.0e-9
 
@@ -118,6 +30,18 @@ newtonmg =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "l2",
                  "snes_linesearch_monitor": None,
                  "snes_linesearch_maxstep": 1,
+                 "snes_monitor": None,
+                 "snes_atol": snes_atol,
+                 "snes_rtol": snes_rtol,
+                 "snes_converged_reason": None, 
+                 "ksp_type":"fgmres", 
+                 "ksp_monitor": None,
+                 "ksp_converged_reason": None,
+                 "pc_type": "mg"}
+
+newtonbasicmg =  {"snes_type": "newtonls",
+                 "snes_linesearch_type": "basic",
+                 "snes_linesearch_damping": 0.75,
                  "snes_monitor": None,
                  "snes_atol": snes_atol,
                  "snes_rtol": snes_rtol,
@@ -443,7 +367,7 @@ faspardecomp  = {
        "snes_atol": snes_atol,
        "snes_rtol": snes_rtol,
        "snes_fas_cycles": 1,
-       "snes_fas_type": "full",
+       "snes_fas_type": "kaskade",
        "snes_fas_galerkin": False,
        #"snes_fas_smoothup": 1,
        #"snes_fas_smoothdown": 1,
@@ -688,6 +612,7 @@ newtonaijngmresfaspardecomp  = {
 
 solvers = {"newtonlu": newtonlu,
            "newtonmg": newtonmg,
+           "newtonbasicmg": newtonbasicmg,
            "newtonmgmatfree": newtonmgmatfree,
            "newtonmgvanka": newtonmgvanka,
            "ngmresfaspardecomp": ngmresfaspardecomp,
@@ -702,11 +627,101 @@ solvers = {"newtonlu": newtonlu,
 import argparse
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument("--solver-type", choices=list(solvers.keys()), required=True)
-parser.add_argument("--composition-type", choices=["additive", "multiplicative"], default="additive")
+parser.add_argument("--nref",  type=int, default=4)
+parser.add_argument("--baseNy",  type=int, default=10)
+parser.add_argument("--p",  type=int, default=3)
+parser.add_argument("--tstep",  type=float, default=0.25)
 args, _ = parser.parse_known_args()
 sp = solvers[args.solver_type]
-sp["patch_pc_patch_local_type"] = args.composition_type
 
+
+Ny = args.baseNy
+Nx = 6*Ny
+nref = args.nref
+distribution_parameters={"partition": True, "overlap_type": (DistributedMeshOverlapType.VERTEX, 2)}
+base = RectangleMesh(Nx, Ny, 2.0, 1.0,distribution_parameters=distribution_parameters)
+mh = MeshHierarchy(base, nref, distribution_parameters=distribution_parameters)
+mesh = mh[-1]
+
+p = args.p
+V = FunctionSpace(mesh, "CG", p)
+dim = V.dim()
+if mesh.comm.rank == 0: print("V.dim(): %s" % dim)
+
+T = Function(V)
+T_ = Function(V)
+s = TestFunction(V)
+
+x, y = SpatialCoordinate(mesh)
+
+# Physical parameters
+rho_l = 1.0
+rho_s = 0.92 #1.0
+#rho_s = 1.0
+c_s = 0.5 #1.0
+#c_s = 1.0
+c_l = 1.0
+L = 70.26 # Latent heat fusion
+K_s = 1.08
+K_l = 0.26 #1.08
+#K_l = 1.08
+T_l = -45.
+T_r = -0.15
+T0 = 4. # 0.0
+
+r = 0.1
+epsilon = 0.01
+
+f_s = Constant(0)
+f_l = Constant(0)
+
+def phi_tanh(T):
+    rd = r
+    return 0.5*(1 + tanh((T-T_r)/rd))
+
+def phi_interp(T):
+    def interp(T):
+        return (T-T_r + epsilon)/(2*epsilon)
+    return conditional(gt(T, T_r + epsilon), 1.0, conditional(lt(T, T_r - epsilon), 0.0, interp(T)))
+    
+    
+def phi_heavi(T):
+    return conditional(gt(T,T_r), 1.0, 0.0)
+
+phi_reg = phi_tanh
+
+phi = phi_reg(T)
+phi_ = phi_reg(T_)
+
+#phi = Constant(1.0)
+#phi_ = Constant(1.0)
+
+
+alpha = rho_s*c_s + phi*(rho_l*c_l - rho_s*c_s)
+kappa = K_s + phi*(K_l - K_s)
+f = f_s + phi*(f_l-f_s)
+
+
+
+dt = Constant(args.tstep)
+
+a_time = alpha*(T - T_)/dt*s*dx
+a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
+a_diff = inner(kappa*grad(T), grad(s))*dx
+F = a_time + a_phase + a_diff - f*s*dx
+#F = a_time + a_diff
+
+#ic = Function(V).interpolate(conditional(gt(x,0.5),T_l,))
+ic = Constant(T0)
+#ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-5*x)))
+
+#iguess = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-2*x)))
+#iguess = ic
+T.assign(ic)
+T_.assign(ic)
+pphi = Function(V).assign(phi)
+
+bcs = DirichletBC(V, Constant(T_l), 1)
 
 
 nvproblem = NonlinearVariationalProblem(F, T, bcs=bcs)
@@ -718,13 +733,13 @@ outfilephi = File("results/phi.pvd")
 outfileT.write(T_)
 outfilephi.write(pphi)
 t = 0.0
-T_final = 1*dt.values()[0]
+T_final = 2*dt.values()[0]
 while(t<T_final):
     if mesh.comm.rank == 0: print("Initial time: ", t)
     start = datetime.now()
     solver.solve()
     end = datetime.now()
-    print("Time taken: %s" % (end-start).total_seconds())
+    if mesh.comm.rank == 0: print("Time taken: %s" % (end-start).total_seconds())
     T_.assign(T)
     outfileT.write(T_)
     pphi.assign(phi)
