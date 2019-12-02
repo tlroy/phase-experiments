@@ -28,42 +28,42 @@ mg_cycle = {
 
 newtonmg =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "l2",
-                 "snes_linesearch_monitor": None,
+                 #"snes_linesearch_monitor": None,
                  "snes_linesearch_maxstep": 1,
-                 "snes_monitor": None,
+                 #"snes_monitor": None,
                  "snes_atol": snes_atol,
                  "snes_rtol": snes_rtol,
                  "snes_converged_reason": None, 
                  "ksp_type":"fgmres", 
-                 "ksp_monitor": None,
-                 "ksp_converged_reason": None,
+                 #"ksp_monitor": None,
+                 #"ksp_converged_reason": None,
                  "pc_type": "mg"}
 
 newtonbasicmg =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "basic",
                  "snes_linesearch_damping": 0.75,
-                 "snes_monitor": None,
+                 #"snes_monitor": None,
                  "snes_atol": snes_atol,
                  "snes_rtol": snes_rtol,
                  "snes_converged_reason": None, 
                  "ksp_type":"fgmres", 
-                 "ksp_monitor": None,
-                 "ksp_converged_reason": None,
+                 #"ksp_monitor": None,
+                 #"ksp_converged_reason": None,
                  "pc_type": "mg"}
 
 newtonmgmatfree = {
        "mat_type": "matfree",
        "snes_type": "newtonls",
        "snes_linesearch_type": "l2",
-       "snes_linesearch_monitor": None,
+       #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_converged_reason": None,
        "snes_atol": snes_atol,
        "snes_rtol": snes_rtol,
        "ksp_type": "fgmres",
-       "ksp_monitor": None,
-       "ksp_converged_reason": None,
+       #"ksp_monitor": None,
+       #"ksp_converged_reason": None,
        "pc_type": "mg",
        "pc_mg_type": "kaskade",
        "mg_coarse_pc_type": "python",
@@ -76,11 +76,11 @@ newtonmgmatfree = {
 
 newtonlu =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "l2",
-                 "snes_linesearch_monitor": None,
+                 #"snes_linesearch_monitor": None,
                  "snes_linesearch_maxstep": 1,
                  "snes_atol": snes_atol,
                  "snes_rtol": snes_rtol,
-                 "snes_monitor": None,
+                 #"snes_monitor": None,
                  "snes_converged_reason": None, 
                  "ksp_type":"preonly", 
                  "pc_type": "lu"}
@@ -89,14 +89,14 @@ newtonmgvanka = {
        "mat_type": "aij",
        "snes_type": "newtonls",
        "snes_linesearch_type": "l2",
-       "snes_linesearch_monitor": None,
+       #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_atol": snes_atol,
        "snes_rtol": snes_rtol,
        "snes_converged_reason": None,
        "ksp_type": "fgmres",
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "pc_type": "mg",
        "mg_coarse_ksp_type": "preonly",
        "mg_coarse_pc_type": "lu",
@@ -120,7 +120,7 @@ newtonmgvanka = {
 ngmresfasstar  = {
        "mat_type": "matfree",
        "snes_type": "ngmres",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -173,7 +173,7 @@ ngmresfasstar  = {
 ngmresfaspardecomp  = {
        "mat_type": "matfree",
        "snes_type": "ngmres",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -204,7 +204,7 @@ ngmresfaspardecomp  = {
        #"npc_fas_levels_patch_sub_snes_monitor": None,
        "npc_fas_levels_patch_sub_snes_atol": 1.0e-11,
        "npc_fas_levels_patch_sub_snes_rtol": 1.0e-11,
-       #"npc_fas_levels_patch_sub_snes_stol": 0.0,
+       "npc_fas_levels_patch_sub_snes_stol": 0.0,
        #"npc_fas_levels_patch_sub_snes_converged_reason": None,
        "npc_fas_levels_patch_sub_snes_linesearch_type": "basic",
        "npc_fas_levels_patch_sub_ksp_type": "preonly",
@@ -229,7 +229,7 @@ ngmresfaspardecomp  = {
 ngmresaijfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "ngmres",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -260,7 +260,7 @@ ngmresaijfaspardecomp  = {
        #"npc_fas_levels_patch_sub_snes_monitor": None,
        "npc_fas_levels_patch_sub_snes_atol": 1.0e-11,
        "npc_fas_levels_patch_sub_snes_rtol": 1.0e-11,
-       #"npc_fas_levels_patch_sub_snes_stol": 0.0,
+       "npc_fas_levels_patch_sub_snes_stol": 0.0,
        #"npc_fas_levels_patch_sub_snes_converged_reason": None,
        "npc_fas_levels_patch_sub_snes_linesearch_type": "basic",
        "npc_fas_levels_patch_sub_ksp_type": "preonly",
@@ -282,7 +282,7 @@ ngmresaijfaspardecomp  = {
 ngmresfasstarpardecomp  = {
        "mat_type": "matfree",
        "snes_type": "ngmres",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -293,17 +293,17 @@ ngmresfasstarpardecomp  = {
        "npc_snes_fas_type": "kaskade",
        "npc_snes_fas_galerkin": False,
        "npc_snes_fas_full_downsweep": False,
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_fas_levels_snes_type": "composite",
-       "npc_fas_levels_snes_monitor": None,
+       #"npc_fas_levels_snes_monitor": None,
        "npc_fas_levels_snes_composite_type": "multiplicative",
        "npc_fas_levels_snes_composite_sneses": "python,python",
        "npc_fas_levels_sub_1_snes_python_type": "firedrake.PatchSNES",
        "npc_fas_levels_sub_1_snes_max_it": 1,
        "npc_fas_levels_sub_1_snes_convergence_test": "skip",
-       "npc_fas_levels_sub_1_snes_converged_reason": None,
-       "npc_fas_levels_sub_1_snes_monitor": None,
+       #"npc_fas_levels_sub_1_snes_converged_reason": None,
+       #"npc_fas_levels_sub_1_snes_monitor": None,
        "npc_fas_levels_sub_1_snes_linesearch_type": "basic",
        "npc_fas_levels_sub_1_snes_linesearch_damping": 1.0,
        "npc_fas_levels_sub_1_patch_snes_patch_construct_type": "python",
@@ -325,8 +325,8 @@ ngmresfasstarpardecomp  = {
        "npc_fas_levels_sub_0_snes_python_type": "firedrake.PatchSNES",
        "npc_fas_levels_sub_0_snes_max_it": 1,
        "npc_fas_levels_sub_0_snes_convergence_test": "skip",
-       "npc_fas_levels_sub_0_snes_converged_reason": None,
-       "npc_fas_levels_sub_0_snes_monitor": None,
+       #"npc_fas_levels_sub_0_snes_converged_reason": None,
+       #"npc_fas_levels_sub_0_snes_monitor": None,
        "npc_fas_levels_sub_0_snes_linesearch_type": "basic",
        "npc_fas_levels_sub_0_snes_linesearch_damping": 1.0,
        "npc_fas_levels_sub_0_patch_snes_patch_construct_type": "pardecomp",
@@ -340,14 +340,14 @@ ngmresfasstarpardecomp  = {
        "npc_fas_levels_sub_0_patch_sub_snes_atol": 1.0e-10,
        "npc_fas_levels_sub_0_patch_sub_snes_rtol": 1.0e-10,
        "npc_fas_levels_sub_0_patch_sub_snes_stol": 0.0,
-       "npc_fas_levels_sub_0_patch_sub_snes_converged_reason": None,
+       #"npc_fas_levels_sub_0_patch_sub_snes_converged_reason": None,
        "npc_fas_levels_sub_0_patch_sub_snes_linesearch_type": "basic",
        "npc_fas_levels_sub_0_patch_sub_ksp_type": "preonly",
        "npc_fas_levels_sub_0_patch_sub_pc_type": "lu",
        "npc_fas_levels_sub_0_patch_sub_pc_factor_mat_solver_type": "umfpack",
        "npc_fas_coarse_snes_type": "newtonls",
-       "npc_fas_coarse_snes_monitor": None,
-       "npc_fas_coarse_snes_converged_reason": None,
+       #"npc_fas_coarse_snes_monitor": None,
+       #"npc_fas_coarse_snes_converged_reason": None,
        "npc_fas_coarse_snes_max_it": 100,
        "npc_fas_coarse_snes_atol": 1.0e-14,
        "npc_fas_coarse_snes_rtol": 1.0e-14,
@@ -372,7 +372,7 @@ faspardecomp  = {
        #"snes_fas_smoothup": 1,
        #"snes_fas_smoothdown": 1,
        "snes_fas_full_downsweep": False,
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_converged_reason": None,
        "snes_max_it": 100,
        "fas_levels_snes_type": "python",
@@ -418,14 +418,14 @@ faspardecomp  = {
 newtonfaspardecomp  = {
        "mat_type": "matfree",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "basic",
        #"snes_view": None,
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
        "mg": mg_cycle,
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -453,7 +453,7 @@ newtonfaspardecomp  = {
        "npc_fas_levels_patch_snes_patch_local_type": "additive",
        "npc_fas_levels_patch_snes_patch_symmetrise_sweep": False,
        "npc_fas_levels_patch_sub_snes_type": "newtonls",
-       "npc_fas_levels_patch_sub_snes_monitor": None,
+       #"npc_fas_levels_patch_sub_snes_monitor": None,
        "npc_fas_levels_patch_sub_snes_atol": 1.0e-10,
        "npc_fas_levels_patch_sub_snes_rtol": 1.0e-10,
        "npc_fas_levels_patch_sub_snes_stol": 0.0,
@@ -481,15 +481,15 @@ newtonfaspardecomp  = {
 newtonaijfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
-       "snes_linesearch_monitor": None,
+       #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
        #"snes_view": None,
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -500,7 +500,7 @@ newtonaijfaspardecomp  = {
        "npc_snes_fas_type": "kaskade",
        "npc_snes_fas_galerkin": False,
        "npc_snes_fas_full_downsweep": False,
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_fas_levels_snes_type": "python",
        "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
@@ -542,15 +542,15 @@ newtonaijfaspardecomp  = {
 newtonaijngmresfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
-       "snes_linesearch_monitor": None,
+       #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
        #"snes_view": None,
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -558,12 +558,12 @@ newtonaijngmresfaspardecomp  = {
        "snes_converged_reason": None,
        
        "npc_snes_type": "ngmres",
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 3,
        "npc_snes_npc_side": "right",
        "npc_snes_atol": 1e-3,
        "npc_snes_rtol": 1e-3,
-       "npc_snes_converged_reason": None,
+       #"npc_snes_converged_reason": None,
 
        "npc_npc_snes_type": "fas",
        "npc_npc_snes_fas_cycles": 1,
@@ -631,6 +631,8 @@ parser.add_argument("--nref",  type=int, default=4)
 parser.add_argument("--baseNy",  type=int, default=10)
 parser.add_argument("--p",  type=int, default=3)
 parser.add_argument("--tstep",  type=float, default=0.25)
+parser.add_argument("--reg",  type=float, default=0.1)
+parser.add_argument("--init-cond", type=str, default="step")
 args, _ = parser.parse_known_args()
 sp = solvers[args.solver_type]
 
@@ -669,7 +671,7 @@ T_l = -45.
 T_r = -0.15
 T0 = 4. # 0.0
 
-r = 0.1
+r = args.reg
 epsilon = 0.01
 
 f_s = Constant(0)
@@ -708,47 +710,59 @@ dt = Constant(args.tstep)
 a_time = alpha*(T - T_)/dt*s*dx
 a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
 a_diff = inner(kappa*grad(T), grad(s))*dx
-F = a_time + a_phase + a_diff - f*s*dx
-#F = a_time + a_diff
+#F = a_time + a_phase + a_diff - f*s*dx
+F = a_time + a_diff
+
+bcs = DirichletBC(V, Constant(T_l), 1)
 
 #ic = Function(V).interpolate(conditional(gt(x,0.5),T_l,))
-ic = Constant(T0)
+#ic = Constant(T0)
 #ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-5*x)))
+#ic = Function(V).assign(Constant(T0))
+#bcs.apply(ic)
+#ic = Function(V).interpolate(ic)
 
 #iguess = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-2*x)))
 #iguess = ic
+
+if args.init_cond == "step":
+    ic = Function(V).assign(Constant(T0))
+    bcs.apply(ic)
+elif args.init_cond == "tanh":
+    ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-5*x)))
+
 T.assign(ic)
 T_.assign(ic)
 pphi = Function(V).assign(phi)
 
-bcs = DirichletBC(V, Constant(T_l), 1)
 
 
+#from IPython import embed; embed()    
 nvproblem = NonlinearVariationalProblem(F, T, bcs=bcs)
 solver = NonlinearVariationalSolver(nvproblem, solver_parameters=sp)
 
-outfileT = File("results/temperature.pvd")
-outfilephi = File("results/phi.pvd")
 
-outfileT.write(T_)
-outfilephi.write(pphi)
+#outfileT = File("results/temperature.pvd")
+#outfilephi = File("results/phi.pvd")
+
+#outfileT.write(T_)
+#outfilephi.write(pphi)
 t = 0.0
 T_final = 2*dt.values()[0]
+start = datetime.now()
+old = start
 while(t<T_final):
-    if mesh.comm.rank == 0: print("Initial time: ", t)
-    start = datetime.now()
+    #if mesh.comm.rank == 0: print("Initial time: ", t)
     solver.solve()
-    end = datetime.now()
-    if mesh.comm.rank == 0: print("Time taken: %s" % (end-start).total_seconds())
+    now = datetime.now()
+    #if mesh.comm.rank == 0: print("Time taken: %s" % (now-old).total_seconds())
+    old = now
     T_.assign(T)
-    outfileT.write(T_)
-    pphi.assign(phi)
-    outfilephi.write(pphi) 
+    #outfileT.write(T_)
+    #pphi.assign(phi)
+    #outfilephi.write(pphi) 
     t += dt.values()[0]
-
+if mesh.comm.rank == 0: print("Total time taken: %s" % (now-start).total_seconds())
 #from IPython import embed; embed()    
     
     
-
-
-
