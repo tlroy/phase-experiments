@@ -6,7 +6,7 @@ for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg new
       mpiexec -n 16 python stefan.py --p 3 --tstep $dt --baseNy 8 --solver-type $SOLVER 2>&1; # | grep -E '(^time|due to)';
     done
     echo "----------------------"
-  done 2>&1 | tee $SOLVER.log
+  done 2>&1 | tee stepp3$SOLVER.log
 done
 
 for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg newtonbasicmg; do
@@ -16,7 +16,7 @@ for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg new
       mpiexec -n 16 python stefan.py --p 3 --tstep $dt --init-cond tanh --baseNy 8 --solver-type $SOLVER 2>&1; # | grep -E '(^time|due to)';
     done
     echo "----------------------"
-  done 2>&1 | tee $SOLVER.log
+  done 2>&1 | tee tanhp3$SOLVER.log
 done
 
 for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg newtonbasicmg; do
@@ -26,7 +26,7 @@ for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg new
       mpiexec -n 16 python stefan.py --p 4 --tstep $dt --init-cond tanh --baseNy 6 --solver-type $SOLVER 2>&1; # | grep -E '(^time|due to)';
     done
     echo "----------------------"
-  done 2>&1 | tee $SOLVER.log
+  done 2>&1 | tee tanhp4$SOLVER.log
 done
 
 
@@ -37,7 +37,7 @@ for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg new
       mpiexec -n 16 python stefan.py --p 2 --tstep $dt --init-cond step --baseNy 12 --solver-type $SOLVER 2>&1; # | grep -E '(^time|due to)';
     done
     echo "----------------------"
-  done 2>&1 | tee $SOLVER.log
+  done 2>&1 | tee stepp2$SOLVER.log
 done
 
 for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg newtonbasicmg; do
@@ -47,5 +47,5 @@ for SOLVER in newtonaijfaspardecomp faspardecomp ngmresfaspardecomp newtonmg new
       mpiexec -n 16 python stefan.py --p 2 --tstep $dt --init-cond tanh --baseNy 12 --solver-type $SOLVER 2>&1; # | grep -E '(^time|due to)';
     done
     echo "----------------------"
-  done 2>&1 | tee $SOLVER.log
+  done 2>&1 | tee tanhp2$SOLVER.log
 done
