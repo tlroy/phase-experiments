@@ -30,13 +30,13 @@ newtonmg =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "l2",
                  #"snes_linesearch_monitor": None,
                  "snes_linesearch_maxstep": 1,
-                 #"snes_monitor": None,
+                 "snes_monitor": None,
                  "snes_atol": snes_atol,
                  "snes_rtol": snes_rtol,
                  "snes_converged_reason": None, 
                  "ksp_type":"fgmres", 
-                 #"ksp_monitor": None,
-                 #"ksp_converged_reason": None,
+                 "ksp_monitor": None,
+                 "ksp_converged_reason": None,
                  "pc_type": "mg"}
 
 newtonbasicmg =  {"snes_type": "newtonls",
@@ -173,7 +173,7 @@ ngmresfasstar  = {
 ngmresfaspardecomp  = {
        "mat_type": "matfree",
        "snes_type": "ngmres",
-       #"snes_monitor": None,
+       "snes_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -184,7 +184,7 @@ ngmresfaspardecomp  = {
        "npc_snes_fas_type": "kaskade",
        "npc_snes_fas_galerkin": False,
        "npc_snes_fas_full_downsweep": False,
-       #"npc_snes_monitor": None,
+       "npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_fas_levels_snes_type": "python",
        "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
@@ -481,7 +481,7 @@ newtonfaspardecomp  = {
 newtonaijfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       #"snes_monitor": None,
+       "snes_monitor": None,
        "snes_linesearch_type": "l2",
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
@@ -489,7 +489,7 @@ newtonaijfaspardecomp  = {
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       #"ksp_monitor": None,
+       "ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -500,7 +500,7 @@ newtonaijfaspardecomp  = {
        "npc_snes_fas_type": "kaskade",
        "npc_snes_fas_galerkin": False,
        "npc_snes_fas_full_downsweep": False,
-       #"npc_snes_monitor": None,
+       "npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_fas_levels_snes_type": "python",
        "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
@@ -542,7 +542,7 @@ newtonaijfaspardecomp  = {
 newtonaijngmresfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       #"snes_monitor": None,
+       "snes_monitor": None,
        "snes_linesearch_type": "l2",
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
@@ -550,7 +550,7 @@ newtonaijngmresfaspardecomp  = {
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       #"ksp_monitor": None,
+       "ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -558,11 +558,11 @@ newtonaijngmresfaspardecomp  = {
        "snes_converged_reason": None,
        
        "npc_snes_type": "ngmres",
-       #"npc_snes_monitor": None,
+       "npc_snes_monitor": None,
        "npc_snes_max_it": 3,
        "npc_snes_npc_side": "right",
-       "npc_snes_atol": 1e-3,
-       "npc_snes_rtol": 1e-3,
+       "npc_snes_atol": 1e-2,
+       "npc_snes_rtol": 1e-2,
        #"npc_snes_converged_reason": None,
 
        "npc_npc_snes_type": "fas",
@@ -876,6 +876,7 @@ parser.add_argument("--nref",  type=int, default=4)
 parser.add_argument("--baseNy",  type=int, default=10)
 parser.add_argument("--p",  type=int, default=3)
 parser.add_argument("--tstep",  type=float, default=0.25)
+parser.add_argument("--tstepping",  type=str, default="euler")
 parser.add_argument("--reg",  type=float, default=0.1)
 parser.add_argument("--init-cond", type=str, default="step")
 args, _ = parser.parse_known_args()
@@ -943,16 +944,25 @@ phi_ = phi_reg(T_)
 #phi = Constant(1.0)
 #phi_ = Constant(1.0)
 
+timestepping = args.tstepping
+# Define quantities for time-stepping
+if timestepping == "euler":
+    T_mid = T
+    phi_mid = phi
+elif timestepping == "midpoint":
+    T_mid = 0.5*(T + T_)
+    phi_mid = phi_reg(T_mid)
 
-alpha = rho_s*c_s + phi*(rho_l*c_l - rho_s*c_s)
-kappa = K_s + phi*(K_l - K_s)
-f = f_s + phi*(f_l-f_s)
+
+alpha = rho_s*c_s + phi_mid*(rho_l*c_l - rho_s*c_s)
+kappa = K_s + phi_mid*(K_l - K_s)
+f = f_s + phi_mid*(f_l-f_s)
 
 dt = Constant(args.tstep)
 
 a_time = alpha*(T - T_)/dt*s*dx
 a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
-a_diff = inner(kappa*grad(T), grad(s))*dx
+a_diff = inner(kappa*grad(T_mid), grad(s))*dx
 F = a_time + a_phase + a_diff - f*s*dx
 #F = a_time + a_diff
 
@@ -985,11 +995,11 @@ nvproblem = NonlinearVariationalProblem(F, T, bcs=bcs)
 solver = NonlinearVariationalSolver(nvproblem, solver_parameters=sp)
 
 
-#outfileT = File("results/temperature.pvd")
-#outfilephi = File("results/phi.pvd")
+outfileT = File("results/temperature.pvd")
+outfilephi = File("results/phi.pvd")
 
-#outfileT.write(T_)
-#outfilephi.write(pphi)
+outfileT.write(T_)
+outfilephi.write(pphi)
 t = 0.0
 T_final = 2*dt.values()[0]
 start = datetime.now()
@@ -1001,9 +1011,9 @@ while(t<T_final):
     #if mesh.comm.rank == 0: print("Time taken: %s" % (now-old).total_seconds())
     old = now
     T_.assign(T)
-    #outfileT.write(T_)
-    #pphi.assign(phi)
-    #outfilephi.write(pphi) 
+    outfileT.write(T_)
+    pphi.assign(phi)
+    outfilephi.write(pphi) 
     t += dt.values()[0]
 if mesh.comm.rank == 0: print("Total time taken: %s" % (now-start).total_seconds())
 #from IPython import embed; embed()    
