@@ -481,7 +481,7 @@ newtonfaspardecomp  = {
 newtonaijfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
@@ -612,26 +612,26 @@ newtonaijngmresfaspardecomp  = {
 newtonaijpardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
-       "snes_linesearch_monitor": None,
+       #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
-       "snes_view": None,
+       #"snes_view": None,
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
        "snes_rtol": snes_rtol,
        "snes_converged_reason": None,
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_snes_type": "python",
        "npc_snes_python_type": "firedrake.PatchSNES",
        "npc_snes_convergence_test": "skip",
-       "npc_snes_converged_reason": None,
+       #"npc_snes_converged_reason": None,
        "npc_snes_linesearch_type": "basic",
        "npc_snes_linesearch_damping": 1.0,
        "npc_patch_snes_patch_construct_type": "pardecomp",
@@ -641,11 +641,11 @@ newtonaijpardecomp  = {
        "npc_patch_snes_patch_local_type": "additive",
        "npc_patch_snes_patch_symmetrise_sweep": False,
        "npc_patch_sub_snes_type": "newtonls",
-       "npc_patch_sub_snes_monitor": None,
+       #"npc_patch_sub_snes_monitor": None,
        "npc_patch_sub_snes_atol": 1.0e-10,
        "npc_patch_sub_snes_rtol": 1.0e-10,
        "npc_patch_sub_snes_stol": 0.0,
-       "npc_patch_sub_snes_converged_reason": None,
+       #"npc_patch_sub_snes_converged_reason": None,
        "npc_patch_sub_snes_linesearch_type": "basic",
        "npc_patch_sub_ksp_type": "preonly",
        "npc_patch_sub_pc_type": "lu",
@@ -655,24 +655,24 @@ newtonaijpardecomp  = {
 newtonaijstarpardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
-       "snes_linesearch_monitor": None,
+       #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
-       "snes_view": None,
+       #"snes_view": None,
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
        "snes_rtol": snes_rtol,
        "snes_converged_reason": None,
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_snes_type": "composite",
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_composite_type": "multiplicative",
        "npc_snes_composite_sneses": "nrichardson,nrichardson",
        
@@ -680,7 +680,7 @@ newtonaijstarpardecomp  = {
        "npc_sub_1_snes_npc_type": "python",
        "npc_sub_1_npc_snes_python_type": "firedrake.PatchSNES",
        "npc_sub_1_npc_snes_convergence_test": "skip",
-       "npc_sub_1_npc_snes_converged_reason": None,
+       #"npc_sub_1_npc_snes_converged_reason": None,
        "npc_sub_1_npc_snes_linesearch_type": "basic",
        "npc_sub_1_npc_snes_linesearch_damping": 1.0,
        "npc_sub_1_npc_patch_snes_patch_construct_type": "star",
@@ -694,7 +694,7 @@ newtonaijstarpardecomp  = {
        "npc_sub_1_npc_patch_sub_snes_atol": 1.0e-10,
        "npc_sub_1_npc_patch_sub_snes_rtol": 1.0e-10,
        "npc_sub_1_npc_patch_sub_snes_stol": 0.0,
-       "npc_sub_1_npc_patch_sub_snes_converged_reason": None,
+       #"npc_sub_1_npc_patch_sub_snes_converged_reason": None,
        "npc_sub_1_npc_patch_sub_snes_linesearch_type": "basic",
        "npc_sub_1_npc_patch_sub_ksp_type": "preonly",
        "npc_sub_1_npc_patch_sub_pc_type": "lu",
@@ -704,7 +704,7 @@ newtonaijstarpardecomp  = {
        "npc_sub_0_snes_npc_type": "python",       
        "npc_sub_0_npc_snes_python_type": "firedrake.PatchSNES",
        "npc_sub_0_npc_snes_convergence_test": "skip",
-       "npc_sub_0_npc_snes_converged_reason": None,
+       #"npc_sub_0_npc_snes_converged_reason": None,
        "npc_sub_0_npc_snes_linesearch_type": "basic",
        "npc_sub_0_npc_snes_linesearch_damping": 1.0,
        "npc_sub_0_npc_patch_snes_patch_construct_type": "pardecomp",
@@ -714,11 +714,11 @@ newtonaijstarpardecomp  = {
        "npc_sub_0_npc_patch_snes_patch_local_type": "additive",
        "npc_sub_0_npc_patch_snes_patch_symmetrise_sweep": False,
        "npc_sub_0_npc_patch_sub_snes_type": "newtonls",
-       "npc_sub_0_npc_patch_sub_snes_monitor": None,
+       #"npc_sub_0_npc_patch_sub_snes_monitor": None,
        "npc_sub_0_npc_patch_sub_snes_atol": 1.0e-10,
        "npc_sub_0_npc_patch_sub_snes_rtol": 1.0e-10,
        "npc_sub_0_npc_patch_sub_snes_stol": 0.0,
-       "npc_sub_0_npc_patch_sub_snes_converged_reason": None,
+       #"npc_sub_0_npc_patch_sub_snes_converged_reason": None,
        "npc_sub_0_npc_patch_sub_snes_linesearch_type": "basic",
        "npc_sub_0_npc_patch_sub_ksp_type": "preonly",
        "npc_sub_0_npc_patch_sub_pc_type": "lu",
@@ -729,7 +729,7 @@ newtonaijstarpardecomp  = {
 newtonaijfasstar  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
@@ -791,7 +791,7 @@ newtonaijfasstar  = {
 newtonaijfasvanka  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
@@ -948,15 +948,13 @@ alpha = rho_s*c_s + phi*(rho_l*c_l - rho_s*c_s)
 kappa = K_s + phi*(K_l - K_s)
 f = f_s + phi*(f_l-f_s)
 
-
-
 dt = Constant(args.tstep)
 
 a_time = alpha*(T - T_)/dt*s*dx
 a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
 a_diff = inner(kappa*grad(T), grad(s))*dx
-#F = a_time + a_phase + a_diff - f*s*dx
-F = a_time + a_diff
+F = a_time + a_phase + a_diff - f*s*dx
+#F = a_time + a_diff
 
 bcs = DirichletBC(V, Constant(T_l), 1)
 
