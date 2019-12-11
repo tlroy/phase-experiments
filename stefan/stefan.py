@@ -561,8 +561,8 @@ newtonaijngmresfaspardecomp  = {
        "npc_snes_monitor": None,
        "npc_snes_max_it": 3,
        "npc_snes_npc_side": "right",
-       "npc_snes_atol": 1e-2,
-       "npc_snes_rtol": 1e-2,
+       "npc_snes_atol": 1e-3,
+       "npc_snes_rtol": 1e-3,
        #"npc_snes_converged_reason": None,
 
        "npc_npc_snes_type": "fas",
@@ -873,8 +873,8 @@ import argparse
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument("--solver-type", choices=list(solvers.keys()), required=True)
 parser.add_argument("--nref",  type=int, default=4)
-parser.add_argument("--baseNy",  type=int, default=10)
-parser.add_argument("--p",  type=int, default=3)
+parser.add_argument("--baseNy",  type=int, default=12)
+parser.add_argument("--p",  type=int, default=2)
 parser.add_argument("--tstep",  type=float, default=0.25)
 parser.add_argument("--tstepping",  type=str, default="euler")
 parser.add_argument("--reg",  type=float, default=0.1)
@@ -945,24 +945,31 @@ phi_ = phi_reg(T_)
 #phi_ = Constant(1.0)
 
 timestepping = args.tstepping
-# Define quantities for time-stepping
+dt = Constant(args.tstep)
+
 if timestepping == "euler":
     T_mid = T
     phi_mid = phi
 elif timestepping == "midpoint":
     T_mid = 0.5*(T + T_)
     phi_mid = phi_reg(T_mid)
+elif timestepping == "cranknicolson":
+    phi_mid = 0.5*(phi + phi_)
 
+if timestepping in ["euler", "midpoint"]:
+    kappa = K_s + phi_mid*(K_l - K_s)
+    a_diff = inner(kappa*grad(T_mid), grad(s))*dx
+elif timestepping in ["cranknicolson"]:
+    kappa = K_s + phi*(K_l - K_s)
+    kappa_ = K_s + phi_*(K_l - K_s)
+    a_diff = 0.5*inner(kappa*grad(T), grad(s))*dx + 0.5*inner(kappa_*grad(T_), grad(s))*dx
 
 alpha = rho_s*c_s + phi_mid*(rho_l*c_l - rho_s*c_s)
-kappa = K_s + phi_mid*(K_l - K_s)
 f = f_s + phi_mid*(f_l-f_s)
-
-dt = Constant(args.tstep)
 
 a_time = alpha*(T - T_)/dt*s*dx
 a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
-a_diff = inner(kappa*grad(T_mid), grad(s))*dx
+
 F = a_time + a_phase + a_diff - f*s*dx
 #F = a_time + a_diff
 
