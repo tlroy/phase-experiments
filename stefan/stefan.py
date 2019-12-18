@@ -30,13 +30,13 @@ newtonmg =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "l2",
                  #"snes_linesearch_monitor": None,
                  "snes_linesearch_maxstep": 1,
-                 "snes_monitor": None,
+                 #"snes_monitor": None,
                  "snes_atol": snes_atol,
                  "snes_rtol": snes_rtol,
                  "snes_converged_reason": None, 
                  "ksp_type":"fgmres", 
-                 "ksp_monitor": None,
-                 "ksp_converged_reason": None,
+                 #"ksp_monitor": None,
+                 #"ksp_converged_reason": None,
                  "pc_type": "mg"}
 
 newtonbasicmg =  {"snes_type": "newtonls",
@@ -173,7 +173,7 @@ ngmresfasstar  = {
 ngmresfaspardecomp  = {
        "mat_type": "matfree",
        "snes_type": "ngmres",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -184,7 +184,7 @@ ngmresfaspardecomp  = {
        "npc_snes_fas_type": "kaskade",
        "npc_snes_fas_galerkin": False,
        "npc_snes_fas_full_downsweep": False,
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_fas_levels_snes_type": "python",
        "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
@@ -481,7 +481,7 @@ newtonfaspardecomp  = {
 newtonaijfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
@@ -489,7 +489,7 @@ newtonaijfaspardecomp  = {
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -500,7 +500,7 @@ newtonaijfaspardecomp  = {
        "npc_snes_fas_type": "kaskade",
        "npc_snes_fas_galerkin": False,
        "npc_snes_fas_full_downsweep": False,
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 1,
        "npc_fas_levels_snes_type": "python",
        "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
@@ -542,7 +542,7 @@ newtonaijfaspardecomp  = {
 newtonaijngmresfaspardecomp  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
-       "snes_monitor": None,
+       #"snes_monitor": None,
        "snes_linesearch_type": "l2",
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
@@ -550,7 +550,7 @@ newtonaijngmresfaspardecomp  = {
        "ksp_type": "fgmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
-       "ksp_monitor": None,
+       #"ksp_monitor": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -558,7 +558,7 @@ newtonaijngmresfaspardecomp  = {
        "snes_converged_reason": None,
        
        "npc_snes_type": "ngmres",
-       "npc_snes_monitor": None,
+       #"npc_snes_monitor": None,
        "npc_snes_max_it": 3,
        "npc_snes_npc_side": "right",
        "npc_snes_atol": 1e-3,
@@ -875,7 +875,7 @@ parser.add_argument("--solver-type", choices=list(solvers.keys()), required=True
 parser.add_argument("--nref",  type=int, default=4)
 parser.add_argument("--baseNy",  type=int, default=12)
 parser.add_argument("--p",  type=int, default=2)
-parser.add_argument("--tstep",  type=float, default=0.25)
+parser.add_argument("--tstep",  type=float, default=0.02)
 parser.add_argument("--tstepping",  type=str, default="euler")
 parser.add_argument("--reg",  type=float, default=0.1)
 parser.add_argument("--init-cond", type=str, default="step")
