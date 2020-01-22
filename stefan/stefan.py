@@ -28,6 +28,7 @@ mg_cycle = {
 
 newtonmg =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "l2",
+                 "snes_max_it": 100,
                  #"snes_linesearch_monitor": None,
                  "snes_linesearch_maxstep": 1,
                  #"snes_monitor": None,
@@ -69,6 +70,7 @@ newtonmgmatfree = {
        "mg_coarse_pc_type": "python",
        "mg_coarse_pc_python_type": "firedrake.AssembledPC",
        "mg_coarse_assembled_ksp_type": "preonly",
+       "mg_coarse_assembled_ksp_converged_reason": None,
        "mg_coarse_assembled_pc_type": "lu",
        "mg_coarse_assembled_pc_factor_mat_solver_type": "mumps",
        "mg_levels_pc_type": "jacobi",
@@ -534,6 +536,7 @@ newtonaijfaspardecomp  = {
        "npc_fas_coarse_snes_rtol": 1.0e-14,
        "npc_fas_coarse_snes_linesearch_type": "l2",
        "npc_fas_coarse_ksp_type": "preonly",
+       #"npc_fas_coarse_ksp_converged_reason": None,
        "npc_fas_coarse_ksp_max_it": 1,
        "npc_fas_coarse_pc_type": "lu",
        "npc_fas_coarse_pc_factor_mat_solver_type": "mumps",
@@ -605,6 +608,7 @@ newtonaijngmresfaspardecomp  = {
        "npc_npc_fas_coarse_snes_linesearch_type": "l2",
        "npc_npc_fas_coarse_ksp_type": "preonly",
        "npc_npc_fas_coarse_ksp_max_it": 1,
+       #"npc_npc_fas_coarse_ksp_converged_reason": None,
        "npc_npc_fas_coarse_pc_type": "lu",
        "npc_npc_fas_coarse_pc_factor_mat_solver_type": "mumps",
       }
@@ -876,9 +880,10 @@ parser.add_argument("--nref",  type=int, default=4)
 parser.add_argument("--baseNy",  type=int, default=12)
 parser.add_argument("--p",  type=int, default=2)
 parser.add_argument("--tstep",  type=float, default=0.02)
+parser.add_argument("--num-tsteps",  type=float, default=1)
 parser.add_argument("--tstepping",  type=str, default="euler")
 parser.add_argument("--reg",  type=float, default=0.1)
-parser.add_argument("--init-cond", type=str, default="step")
+parser.add_argument("--init-cond", type=float, default=0)
 args, _ = parser.parse_known_args()
 sp = solvers[args.solver_type]
 
@@ -895,6 +900,9 @@ p = args.p
 V = FunctionSpace(mesh, "CG", p)
 dim = V.dim()
 if mesh.comm.rank == 0: print("V.dim(): %s" % dim)
+Vc = FunctionSpace(base, "CG", p)
+dimc = Vc.dim()
+if mesh.comm.rank == 0: print("Vc.dim(): %s" % dimc)
 
 T = Function(V)
 T_ = Function(V)
@@ -913,7 +921,7 @@ L = 70.26 # Latent heat fusion
 K_s = 1.08
 K_l = 0.26 #1.08
 #K_l = 1.08
-T_l = -45.
+T_l = -45. #-15.
 T_r = -0.15
 T0 = 4. # 0.0
 
@@ -931,8 +939,7 @@ def phi_interp(T):
     def interp(T):
         return (T-T_r + epsilon)/(2*epsilon)
     return conditional(gt(T, T_r + epsilon), 1.0, conditional(lt(T, T_r - epsilon), 0.0, interp(T)))
-    
-    
+
 def phi_heavi(T):
     return conditional(gt(T,T_r), 1.0, 0.0)
 
@@ -940,9 +947,6 @@ phi_reg = phi_tanh
 
 phi = phi_reg(T)
 phi_ = phi_reg(T_)
-
-#phi = Constant(1.0)
-#phi_ = Constant(1.0)
 
 timestepping = args.tstepping
 dt = Constant(args.tstep)
@@ -971,7 +975,6 @@ a_time = alpha*(T - T_)/dt*s*dx
 a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
 
 F = a_time + a_phase + a_diff - f*s*dx
-#F = a_time + a_diff
 
 bcs = DirichletBC(V, Constant(T_l), 1)
 
@@ -985,44 +988,48 @@ bcs = DirichletBC(V, Constant(T_l), 1)
 #iguess = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-2*x)))
 #iguess = ic
 
-if args.init_cond == "step":
+if args.init_cond == 0.0:
     ic = Function(V).assign(Constant(T0))
     bcs.apply(ic)
-elif args.init_cond == "tanh":
-    ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-5*x)))
+else:
+    steep = args.init_cond #5.0
+    ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-steep*x)))
 
 T.assign(ic)
 T_.assign(ic)
-pphi = Function(V).assign(phi)
 
 
-
-#from IPython import embed; embed()    
 nvproblem = NonlinearVariationalProblem(F, T, bcs=bcs)
 solver = NonlinearVariationalSolver(nvproblem, solver_parameters=sp)
 
 
-outfileT = File("results/temperature.pvd")
-outfilephi = File("results/phi.pvd")
+#outfileT = File("results/temperature.pvd")
+#outfilephi = File("results/phi.pvd")
 
-outfileT.write(T_)
-outfilephi.write(pphi)
+#pphi = Function(V).assign(phi)
+#outfileT.write(T_)
+#outfilephi.write(pphi)
 t = 0.0
-T_final = 2*dt.values()[0]
+#t_final = args.num_tsteps*dt.values()[0]
 start = datetime.now()
 old = start
-while(t<T_final):
+#while(t<t_final):
+for i in range(0, int(args.num_tsteps)):
     #if mesh.comm.rank == 0: print("Initial time: ", t)
     solver.solve()
     now = datetime.now()
     #if mesh.comm.rank == 0: print("Time taken: %s" % (now-old).total_seconds())
     old = now
     T_.assign(T)
-    outfileT.write(T_)
-    pphi.assign(phi)
-    outfilephi.write(pphi) 
+    #outfileT.write(T_)
+    #pphi.assign(phi)
+    #outfilephi.write(pphi) 
+    #dt.assign(dt.values()[0]*6.)
     t += dt.values()[0]
 if mesh.comm.rank == 0: print("Total time taken: %s" % (now-start).total_seconds())
-#from IPython import embed; embed()    
-    
-    
+
+#ranks = Function(V)
+#ranks.dat.data[...] = float(mesh.comm.rank)
+
+#outfileranks = File("results/ranks.pvd")
+#outfileranks.write(ranks)
