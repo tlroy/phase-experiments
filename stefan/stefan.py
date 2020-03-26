@@ -181,7 +181,6 @@ ngmresfaspardecomp  = {
        "snes_atol": snes_atol,
        "snes_rtol": snes_rtol,
        "snes_converged_reason": None,
-       "npc_snes_type": "fas",
        "npc_snes_fas_cycles": 1,
        "npc_snes_fas_type": "kaskade",
        "npc_snes_fas_galerkin": False,
@@ -237,6 +236,7 @@ ngmresaijfaspardecomp  = {
        "snes_atol": snes_atol,
        "snes_rtol": snes_rtol,
        "snes_converged_reason": None,
+       "npc_fas_log": None,
        "npc_snes_type": "fas",
        "npc_snes_fas_cycles": 1,
        "npc_snes_fas_type": "kaskade",
@@ -508,7 +508,7 @@ newtonaijfaspardecomp  = {
        "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
        "npc_fas_levels_snes_max_it": 1,
        "npc_fas_levels_snes_convergence_test": "skip",
-       #"npc_fas_levels_snes_converged_reason": None,
+       "npc_fas_levels_snes_converged_reason": None,
        #"npc_fas_levels_snes_monitor": None,
        "npc_fas_levels_snes_linesearch_type": "basic",
        "npc_fas_levels_snes_linesearch_damping": 1.0,
@@ -530,7 +530,7 @@ newtonaijfaspardecomp  = {
        "npc_fas_levels_patch_sub_pc_factor_mat_solver_type": "mumps",
        "npc_fas_coarse_snes_type": "newtonls",
        #"npc_fas_coarse_snes_monitor": None,
-       #"npc_fas_coarse_snes_converged_reason": None,
+       "npc_fas_coarse_snes_converged_reason": None,
        "npc_fas_coarse_snes_max_it": 100,
        "npc_fas_coarse_snes_atol": 1.0e-14,
        "npc_fas_coarse_snes_rtol": 1.0e-14,
@@ -855,6 +855,50 @@ newtonaijfasvanka  = {
        "npc_fas_coarse_pc_factor_mat_solver_type": "mumps",
       }
 
+newtonmgpardecomp =  {"snes_type": "newtonls",
+                 "snes_linesearch_type": "l2",
+                 "snes_max_it": 100,
+                 #"snes_linesearch_monitor": None,
+                 "snes_linesearch_maxstep": 1,
+                 #"snes_monitor": None,
+                 "snes_atol": snes_atol,
+                 "snes_rtol": snes_rtol,
+                 "snes_converged_reason": None, 
+                 "ksp_type":"fgmres", 
+                 #"ksp_monitor": None,
+                 "ksp_converged_reason": None,
+                 "pc_type": "mg",
+                 "pc_mg_cycles": 1,
+                 "pc_mg_type": "kaskade",
+                 "pc_mg_galerkin": False,
+                 "pc_mg_full_downsweep": False,
+                 #"pc_monitor": None,
+                 #"pc_max_it": 1,
+                 "mg_levels_pc_type": "python",
+                 "mg_levels_pc_python_type": "firedrake.PatchPC",
+                 "mg_levels_pc_max_it": 1,
+                 "mg_levels_pc_convergence_test": "skip",
+                 #"mg_levels_pc_converged_reason": None,
+                 #"mg_levels_pc_monitor": None,
+                 "mg_levels_patch_pc_patch_construct_type": "pardecomp",
+                 "mg_levels_patch_pc_patch_pardecomp_overlap": 1,
+                 "mg_levels_patch_pc_patch_partition_of_unity": True,
+                 "mg_levels_patch_pc_patch_sub_mat_type": "seqaij",
+                 "mg_levels_patch_pc_patch_local_type": "additive",
+                 "mg_levels_patch_pc_patch_symmetrise_sweep": False,
+                 "mg_levels_patch_sub_ksp_type": "preonly",
+                 #"mg_levels_patch_sub_ksp_converged_reason": None,
+                 "mg_levels_patch_sub_pc_type": "lu",
+                 "mg_levels_patch_sub_pc_factor_mat_solver_type": "mumps",
+                 "mg_coarse_ksp_type": "preonly",
+                 #"mg_coarse_ksp_converged_reason": None,
+                 "mg_coarse_ksp_max_it": 1,
+                 "mg_coarse_pc_type": "lu",
+                 "mg_coarse_pc_factor_mat_solver_type": "mumps",
+                }
+
+
+
 solvers = {"newtonlu": newtonlu,
            "newtonmg": newtonmg,
            "newtonbasicmg": newtonbasicmg,
@@ -871,7 +915,9 @@ solvers = {"newtonlu": newtonlu,
            "newtonaijpardecomp": newtonaijpardecomp,
            "newtonaijstarpardecomp": newtonaijstarpardecomp,
            "newtonaijfasstar": newtonaijfasstar,   
-           "newtonaijfasvanka": newtonaijfasvanka,}   
+           "newtonaijfasvanka": newtonaijfasvanka,
+           "newtonmgpardecomp": newtonmgpardecomp,
+           }   
            
 import argparse
 parser = argparse.ArgumentParser(add_help=False)
@@ -884,17 +930,89 @@ parser.add_argument("--num-tsteps",  type=float, default=1)
 parser.add_argument("--tstepping",  type=str, default="euler")
 parser.add_argument("--reg",  type=float, default=0.1)
 parser.add_argument("--init-cond", type=float, default=0)
+parser.add_argument("--case", type=str, default="simplerectangle")
 args, _ = parser.parse_known_args()
 sp = solvers[args.solver_type]
 
 
+case = args.case
+# Physical parameters
+if case == "simplerectangle":
+    # domain [0,2]X[0,1]
+    Lx = 2.0
+    left_x = 0.0
+    left_y = 0.0
+    Ly = 1.0
+    rho_l = 1.0
+    rho_s = 0.92 #1.0
+    #rho_s = 1.0
+    c_s = 0.5 #1.0
+    #c_s = 1.0
+    c_l = 1.0
+    L = 70.26 # Latent heat fusion
+    K_s = 1.08
+    K_l = 0.26 #1.08
+    #K_l = 1.08
+    T_r = -0.15
+elif case == "oscillatingsource":
+    # domain [-1,1]X[-1,1]. smallest reg=0.00025. Final time T = 12
+    Lx = 2.0
+    Ly = 2.0
+    left_x = -1.0
+    left_y = -1.0
+    rho_l = 1.0
+    rho_s = 1.0
+    c_s = 1.0
+    c_l = 1.0
+    L = 1.0
+    K_s = 1.0
+    K_l = 1.0
+    T_r = 0.0
+elif case == "wedge":
+    # domain [-1,1]X[-1,1]. T=0.1. smallest reg for faspardecomp: 0.003. newtonmg: 0.002
+    Lx = 1.0
+    Ly = 1.0
+    left_x = -0.0
+    left_y = -0.0
+    rho_l = 1.0
+    rho_s = 1.0
+    c_s = 1.0
+    c_l = 1.0
+    L = 20.# default: 0.25 
+    K_s = 1.0
+    K_l = 1.0
+    T_r = 0.0
+elif case == "cuspformation":
+    # domain [-1,1]X[-1,1]. smallest reg: 0.03. Final time T = 1
+    Lx = 6.0
+    Ly = 5.0
+    left_x = -2.0
+    left_y = -0.0
+    rho_l = 1.0
+    rho_s = 1.0
+    c_s = 1.0
+    c_l = 1.0
+    L = 1.0
+    K_s = 1.0
+    K_l = 1.0
+    T_r = 0.0
+
+
 Ny = args.baseNy
-Nx = 6*Ny
+if case == "simplerectangle":
+    Nx = 6*Ny
+else:
+    Nx = Ny
 nref = args.nref
 distribution_parameters={"partition": True, "overlap_type": (DistributedMeshOverlapType.VERTEX, 2)}
-base = RectangleMesh(Nx, Ny, 2.0, 1.0,distribution_parameters=distribution_parameters)
+base = RectangleMesh(Nx, Ny, Lx, Ly, distribution_parameters=distribution_parameters)
 mh = MeshHierarchy(base, nref, distribution_parameters=distribution_parameters)
 mesh = mh[-1]
+
+#Changing coordinates
+for msh in mh:
+    msh.coordinates.dat.data[:,0] += left_x
+    msh.coordinates.dat.data[:,1] += left_y
 
 p = args.p
 V = FunctionSpace(mesh, "CG", p)
@@ -905,31 +1023,67 @@ dimc = Vc.dim()
 if mesh.comm.rank == 0: print("Vc.dim(): %s" % dimc)
 
 T = Function(V)
-T_ = Function(V)
+T_ = Function(V, name = "T")
 s = TestFunction(V)
 
-x, y = SpatialCoordinate(mesh)
+t = Constant(args.tstep) #time
 
-# Physical parameters
-rho_l = 1.0
-rho_s = 0.92 #1.0
-#rho_s = 1.0
-c_s = 0.5 #1.0
-#c_s = 1.0
-c_l = 1.0
-L = 70.26 # Latent heat fusion
-K_s = 1.08
-K_l = 0.26 #1.08
-#K_l = 1.08
-T_l = -45. #-15.
-T_r = -0.15
-T0 = 4. # 0.0
+x, y = SpatialCoordinate(mesh)
 
 r = args.reg
 epsilon = 0.01
 
-f_s = Constant(0)
-f_l = Constant(0)
+
+# Define source terms, boundary conditions, and initial conditions
+if case == "simplerectangle":
+    f_s = Constant(0.0)
+    f_l = Constant(0.0)
+    T_l = -45. #-15.
+    bcs = DirichletBC(V, Constant(T_l), 1)
+    T0 = 4. # 0.0
+    if args.init_cond == 0.0:
+        ic = Function(V).assign(Constant(T0))
+        bcs.apply(ic)
+    else:
+        steep = args.init_cond #5.0
+        ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-steep*x)))
+elif case == "oscillatingsource":
+    expr1 = (3.125 - 50.*((x+0.2)**2 + (y+0.5)**2))
+    expr2 = (3.125 - 50.*((x+0.2)**2 + (y-0.5)**2))
+    f_s = cos(t/5.)*conditional(gt(0,expr1), 0, expr1) + sin(t/5.)*conditional(gt(0,expr2), 0, expr2)
+    f_l = f_s
+    bcs = DirichletBC(V, y/10., [1,2,4])
+    ic = Function(V).interpolate(y/10.)
+elif case == "wedge":
+    f_s = Constant(0.0)
+    f_l = Constant(0.0)
+    ic = Function(V).interpolate(Constant(0.3))
+    bcs = DirichletBC(V, Constant(-1), [1,3])
+elif case == "oscillatingcircle":
+    alpha = 0.5 + sin(1.25*t)
+    alpha_p = 1.25*cos(1.25*t)
+    rr = sqrt(x**2+(y-alpha)**2)
+    sinphi = (y-alpha)/rr
+    expr1 = 0.75*(rr**2 - 1)
+    expr2 = (1.5 - alpha_p*sinphi)*(rr-1)
+    T_e = conditional(lt(rr, 1), expr1, expr2)
+    print("WARNING: Example not completed") # TODO: find source term
+    #f_s = Constant(0.0)
+    #f_l = f_s
+    bcs = DirichletBC(V, T_e, [2,3,4])
+    ic = Function(V).interpolate(T_e)
+elif case == "cuspformation":
+    rr = sqrt(x**2+(y-2)**2)
+    T0 = conditional(lt(rr,1), 1, 0)*conditional(gt(y,2), 0.25*(rr**2-1), 0) \
+            + conditional(lt(abs(x),1), 1, 0)*conditional(lt(y,2), 0.25*(x**2-1), 0) \
+            + conditional(gt(rr,1), 1, 0)*conditional(gt(y,2), rr-1, 0) \
+            + conditional(gt(abs(x), 1), 1, 0)*conditional(lt(y,1), 5*(abs(x)-1), 0) \
+            + conditional(gt(abs(x), 1), 1, 0)*conditional(lt(abs(y-1.5),0.5), (abs(x)-1)*(3-2*cos(pi*(y-2))), 0)
+    f_s = Constant(0.0)
+    f_l = Constant(0.0)
+    bcs = DirichletBC(V, T0*(1+t), [1,2,4])
+    ic = Function(V).interpolate(T0)
+
 
 def phi_tanh(T):
     rd = r
@@ -976,24 +1130,8 @@ a_phase =  rho_l*L*(phi - phi_)/dt*s*dx
 
 F = a_time + a_phase + a_diff - f*s*dx
 
-bcs = DirichletBC(V, Constant(T_l), 1)
 
-#ic = Function(V).interpolate(conditional(gt(x,0.5),T_l,))
-#ic = Constant(T0)
-#ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-5*x)))
-#ic = Function(V).assign(Constant(T0))
-#bcs.apply(ic)
-#ic = Function(V).interpolate(ic)
 
-#iguess = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-2*x)))
-#iguess = ic
-
-if args.init_cond == 0.0:
-    ic = Function(V).assign(Constant(T0))
-    bcs.apply(ic)
-else:
-    steep = args.init_cond #5.0
-    ic = Function(V).interpolate( T0 + (T_l-T0)*(1 + tanh(-steep*x)))
 
 T.assign(ic)
 T_.assign(ic)
@@ -1002,31 +1140,42 @@ T_.assign(ic)
 nvproblem = NonlinearVariationalProblem(F, T, bcs=bcs)
 solver = NonlinearVariationalSolver(nvproblem, solver_parameters=sp)
 
+pphi = Function(V, name = "Phi").assign(phi)
 
-#outfileT = File("results/temperature.pvd")
-#outfilephi = File("results/phi.pvd")
 
-#pphi = Function(V).assign(phi)
-#outfileT.write(T_)
-#outfilephi.write(pphi)
-t = 0.0
+
+outfile = File("results/solution.pvd")
+outfile.write(T_, pphi)
+time = 0.0
 #t_final = args.num_tsteps*dt.values()[0]
 start = datetime.now()
 old = start
 #while(t<t_final):
+KK = 1
+k=0
+
 for i in range(0, int(args.num_tsteps)):
-    #if mesh.comm.rank == 0: print("Initial time: ", t)
+    if mesh.comm.rank == 0: print("Initial time: ", time, flush = True)
     solver.solve()
     now = datetime.now()
-    #if mesh.comm.rank == 0: print("Time taken: %s" % (now-old).total_seconds())
+    if mesh.comm.rank == 0: print("Time taken: %s" % (now-old).total_seconds(), flush = True)
     old = now
     T_.assign(T)
-    #outfileT.write(T_)
-    #pphi.assign(phi)
-    #outfilephi.write(pphi) 
-    #dt.assign(dt.values()[0]*6.)
-    t += dt.values()[0]
-if mesh.comm.rank == 0: print("Total time taken: %s" % (now-start).total_seconds())
+    k += 1
+    if k == KK:
+        pphi.assign(phi)
+        outfile.write(T_, pphi)
+        k = 0
+    time += dt.values()[0]
+    t.assign(time + dt.values()[0])
+    
+if mesh.comm.rank == 0: 
+    print("Total time taken: %s" % (now-start).total_seconds())
+dargs = vars(args)                                                                              
+if mesh.comm.rank == 0: 
+    for x in dargs: 
+        print(x, ':', dargs[x]) 
+
 
 #ranks = Function(V)
 #ranks.dat.data[...] = float(mesh.comm.rank)
