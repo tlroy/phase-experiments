@@ -44,7 +44,9 @@ newtonmg =  {"snes_type": "newtonls",
                  #"ksp_monitor": None,
                  #"ksp_converged_reason": None,
                  "pc_type": "mg",
-                 #"pc_mg_type": "full",
+                 "pc_mg_type": "full",
+                 "mg_coarse_ksp_type": "preonly",
+                 #"mg_coarse_ksp_converged_reason": None,
                  "mg_coarse_ksp_max_it": 1,
                  "mg_coarse_pc_type": "lu",
                  "mg_coarse_pc_factor_mat_solver_type": "mumps",
@@ -56,7 +58,7 @@ newtonbasicmg =  {"snes_type": "newtonls",
                  #"snes_monitor": None,
                  "snes_atol": snes_atol,
                  "snes_rtol": snes_rtol,
-                 "snes_converged_reason": None,  
+                 "snes_converged_reason": None, 
                  "ksp_type":"gmres", 
                  "ksp_pc_side": "right",
                  "ksp_rtol": ksp_rtol,
@@ -66,31 +68,31 @@ newtonbasicmg =  {"snes_type": "newtonls",
                  "pc_type": "mg"}
 
 newtonmgmatfree = {
-       "mat_type": "matfree",
-       "snes_type": "newtonls",
-       "snes_linesearch_type": "l2",
-       #"snes_linesearch_monitor": None,
-       "snes_linesearch_maxstep": 1,
-       #"snes_monitor": None,
-       "snes_converged_reason": None,
-       "snes_atol": snes_atol,
-       "snes_rtol": snes_rtol,
-       "ksp_type":"gmres", 
-       "ksp_pc_side": "right",
-       "ksp_rtol": ksp_rtol,
-       "ksp_atol": ksp_atol,
-       #"ksp_monitor": None,
-       #"ksp_converged_reason": None,
-       "pc_type": "mg",
-       "pc_mg_type": "kaskade",
-       "mg_coarse_pc_type": "python",
-       "mg_coarse_pc_python_type": "firedrake.AssembledPC",
-       "mg_coarse_assembled_ksp_type": "preonly",
-       "mg_coarse_assembled_ksp_converged_reason": None,
-       "mg_coarse_assembled_pc_type": "lu",
-       "mg_coarse_assembled_pc_factor_mat_solver_type": "mumps",
-       "mg_levels_pc_type": "jacobi",
-         }
+                "mat_type": "matfree",
+                "snes_type": "newtonls",
+                "snes_linesearch_type": "l2",
+                #"snes_linesearch_monitor": None,
+                "snes_linesearch_maxstep": 1,
+                #"snes_monitor": None,
+                "snes_converged_reason": None,
+                "snes_atol": snes_atol,
+                "snes_rtol": snes_rtol,
+                 "ksp_type":"gmres", 
+                 "ksp_pc_side": "right",
+                 "ksp_rtol": ksp_rtol,
+                 "ksp_atol": ksp_atol,
+                #"ksp_monitor": None,
+                #"ksp_converged_reason": None,
+                "pc_type": "mg",
+                "pc_mg_type": "kaskade",
+                "mg_coarse_pc_type": "python",
+                "mg_coarse_pc_python_type": "firedrake.AssembledPC",
+                "mg_coarse_assembled_ksp_type": "preonly",
+                "mg_coarse_assembled_ksp_converged_reason": None,
+                "mg_coarse_assembled_pc_type": "lu",
+                "mg_coarse_assembled_pc_factor_mat_solver_type": "mumps",
+                "mg_levels_pc_type": "jacobi",
+                }
 
 newtonlu =  {"snes_type": "newtonls",
                  "snes_linesearch_type": "l2",
@@ -514,13 +516,15 @@ newtonaijfaspardecomp  = {
        "ksp_pc_side": "right",
        "ksp_rtol": ksp_rtol,
        "ksp_atol": ksp_atol,
+       #"ksp_converged_reason": None,
        "pc_type": "mg",
        "pc_mg_type" : "full",
+       "mg_coarse_ksp_type": "preonly",
+       #"mg_coarse_ksp_converged_reason": None,
        "mg_coarse_ksp_max_it": 1,
        "mg_coarse_pc_type": "lu",
        "mg_coarse_pc_factor_mat_solver_type": "mumps",
        #"ksp_monitor": None,
-       #"ksp_converged_reason": None,
        "snes_max_it": 100,
        "snes_npc_side": "right",
        "snes_atol": snes_atol,
@@ -537,7 +541,7 @@ newtonaijfaspardecomp  = {
        "npc_fas_levels_snes_python_type": "firedrake.PatchSNES",
        "npc_fas_levels_snes_max_it": 1,
        "npc_fas_levels_snes_convergence_test": "skip",
-       #"npc_fas_levels_snes_converged_reason": None,
+       "npc_fas_levels_snes_converged_reason": None,
        #"npc_fas_levels_snes_monitor": None,
        "npc_fas_levels_snes_linesearch_type": "basic",
        "npc_fas_levels_snes_linesearch_damping": 1.0,
@@ -579,7 +583,10 @@ newtonaijngmresfaspardecomp  = {
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
        #"snes_view": None,
-       "ksp_type": "gmres",
+       "ksp_type":"gmres", 
+       "ksp_pc_side": "right",
+       "ksp_rtol": ksp_rtol,
+       "ksp_atol": ksp_atol,
        "pc_type": "mg",
        "pc_mg_type" : "full",
        #"ksp_monitor": None,
@@ -940,6 +947,7 @@ newtonmgpardecomp =  {"snes_type": "newtonls",
                  "mg_coarse_pc_type": "lu",
                  "mg_coarse_pc_factor_mat_solver_type": "mumps",
                 }
+
 newtonaijfas  = {
        "mat_type": "aij",
        "snes_type": "newtonls",
@@ -948,12 +956,11 @@ newtonaijfas  = {
        #"snes_linesearch_monitor": None,
        "snes_linesearch_maxstep": 1,
        #"snes_view": None,
-       "ksp_type":"gmres", 
-       "ksp_pc_side": "right",
-       "ksp_rtol": ksp_rtol,
-       "ksp_atol": ksp_atol,
+       "ksp_type": "gmres",
        "pc_type": "mg",
        "pc_mg_type" : "full",
+       "mg_coarse_ksp_type": "preonly",
+       #"mg_coarse_ksp_converged_reason": None,
        "mg_coarse_ksp_max_it": 1,
        "mg_coarse_pc_type": "lu",
        "mg_coarse_pc_factor_mat_solver_type": "mumps",
@@ -983,9 +990,11 @@ newtonaijfas  = {
        "npc_fas_coarse_ksp_max_it": 1,
        "npc_fas_coarse_pc_type": "lu",
        "npc_fas_coarse_pc_factor_mat_solver_type": "mumps",
-       #"npc_fas_levels_snes_monitor": None,
-       #"npc_fas_levels_snes_converged_reason": None,
+       "npc_fas_levels_snes_converged_reason": None,
+       "npc_fas_levels_snes_monitor": None,
       }
+
+
 
 
 
@@ -1021,19 +1030,21 @@ parser.add_argument("--num-tsteps",  type=float, default=1)
 parser.add_argument("--tstepping",  type=str, default="euler")
 parser.add_argument("--reg",  type=float, default=0.1)
 parser.add_argument("--init-cond", type=float, default=0)
-parser.add_argument("--case", type=str, default="simplerectangle")
+parser.add_argument("--case", type=str, default="simplebox")
 args, _ = parser.parse_known_args()
 sp = solvers[args.solver_type]
 
 
 case = args.case
 # Physical parameters
-if case == "simplerectangle":
-    # domain [0,2]X[0,1]. smallest dt:. smallest reg
+if case == "simplebox":
+    # domain [0,2]X[0,1]X[0,1]
     Lx = 2.0
-    Ly = 1.0 
+    Ly = 1.0
+    Lz = 1.0
     left_x = 0.0
     left_y = 0.0
+    left_z = 0.0
     rho_l = 1.0
     rho_s = 0.92 #1.0
     #rho_s = 1.0
@@ -1045,12 +1056,46 @@ if case == "simplerectangle":
     K_l = 0.26 #1.08
     #K_l = 1.08
     T_r = -0.15
-elif case == "oscillatingsource":
-    # domain [-1,1]X[-1,1]. smallest reg=0.00025. Final time T = 12
+elif case == "oscillatingsource" or case == "oscillatingsourcetear":
+    # domain [-1,1]X[-1,1]X[-0.5,0.5]. smallest reg=0.00025. Final time T = 12
     Lx = 2.0
     Ly = 2.0
+    Lz = 1.0
     left_x = -1.0
     left_y = -1.0
+    left_z = -0.5
+    rho_l = 1.0
+    rho_s = 1.0
+    c_s = 1.0
+    c_l = 1.0
+    L = 1.0
+    K_s = 1.0
+    K_l = 1.0
+    T_r = 0.0
+elif case == "oscillatingsourceBel3D":
+    # domain [-1,1]X[-1,1]X[-1,1]. smallest reg=0.00025. Final time T = 12
+    Lx = 2.0
+    Ly = 2.0
+    Lz = 2.0
+    left_x = -1.0
+    left_y = -1.0
+    left_z = -1.0
+    rho_l = 1.0
+    rho_s = 1.0
+    c_s = 1.0
+    c_l = 1.0
+    L = 1.0
+    K_s = 1.0
+    K_l = 1.0
+    T_r = 0.0
+elif case == "oscillatingsource3D":
+    # domain [-1,1]X[-1,1]X[-1,1]. smallest reg=0.00025. Final time T = 12
+    Lx = 2.0
+    Ly = 2.0
+    Lz = 1.0
+    left_x = -1.0
+    left_y = -1.0
+    left_z = -0.5
     rho_l = 1.0
     rho_s = 1.0
     c_s = 1.0
@@ -1060,25 +1105,29 @@ elif case == "oscillatingsource":
     K_l = 1.0
     T_r = 0.0
 elif case == "wedge":
-    # domain [-1,1]X[-1,1]. T=0.1. smallest reg for faspardecomp: 0.003. newtonmg: 0.002
+    # domain [0,1]X[0,1]X[0,1]. T=0.1. smallest reg for faspardecomp: 0.003. newtonmg: 0.002
     Lx = 1.0
     Ly = 1.0
+    Lz = 1.0
     left_x = -0.0
     left_y = -0.0
+    left_z = -0.0
     rho_l = 1.0
     rho_s = 1.0
     c_s = 1.0
     c_l = 1.0
-    L = 20.# default: 0.25 
+    L = 0.25# default: 0.25 
     K_s = 1.0
     K_l = 1.0
     T_r = 0.0
 elif case == "cuspformation":
-    # domain [-2,4]X[-0,5]. smallest reg: 0.03. Final time T = 1
+    # domain [-2,4]X[0,5]X[-2,4]. smallest reg: 0.03. Final time T = 1
     Lx = 6.0
     Ly = 5.0
+    Lz = 6.0
     left_x = -2.0
     left_y = -0.0
+    left_z = -2.0
     rho_l = 1.0
     rho_s = 1.0
     c_s = 1.0
@@ -1090,13 +1139,23 @@ elif case == "cuspformation":
 
 
 Ny = args.baseNy
-if case == "simplerectangle":
+if case == "simplebox":
     Nx = 6*Ny
+    Nz = Ny
+elif case=="oscillatingsource" or case=="oscillatingsourcetear":
+    Nx = Ny
+    Nz = int(Ny/8)
+    print(Nz, flush=True)
+elif case=="oscillatingsource3D":
+    Nx = Ny
+    Nz = int(Ny/2)
+    print(Nz, flush=True)
 else:
     Nx = Ny
+    Nz = Ny
 nref = args.nref
 distribution_parameters={"partition": True, "overlap_type": (DistributedMeshOverlapType.VERTEX, 2)}
-base = RectangleMesh(Nx, Ny, Lx, Ly, distribution_parameters=distribution_parameters)
+base = BoxMesh(Nx, Ny, Nz, Lx, Ly, Lz, distribution_parameters=distribution_parameters)
 mh = MeshHierarchy(base, nref, distribution_parameters=distribution_parameters)
 mesh = mh[-1]
 
@@ -1104,6 +1163,7 @@ mesh = mh[-1]
 for msh in mh:
     msh.coordinates.dat.data[:,0] += left_x
     msh.coordinates.dat.data[:,1] += left_y
+    msh.coordinates.dat.data[:,2] += left_z
 
 p = args.p
 V = FunctionSpace(mesh, "CG", p)
@@ -1119,14 +1179,14 @@ s = TestFunction(V)
 
 t = Constant(args.tstep) #time
 
-x, y = SpatialCoordinate(mesh)
+x, y, z = SpatialCoordinate(mesh)
 
 r = args.reg
 epsilon = 0.01
 
 
 # Define source terms, boundary conditions, and initial conditions
-if case == "simplerectangle":
+if case == "simplebox":
     f_s = Constant(0.0)
     f_l = Constant(0.0)
     T_l = -45. #-15.
@@ -1145,11 +1205,41 @@ elif case == "oscillatingsource":
     f_l = f_s
     bcs = DirichletBC(V, y/10., [1,2,4])
     ic = Function(V).interpolate(y/10.)
+elif case == "oscillatingsourcetear":
+    expr1 = (3.125 - 50.*((x+0.2)**2 + (y+0.5)**2))
+    expr2 = (3.125 - 50.*((x+0.2)**2 + (y-0.5)**2))
+    f_s = cos(t/5.)*conditional(gt(0,expr1), 0, expr1) + sin(t/5.)*conditional(gt(0,expr2), 0, expr2)
+    f_s = 2*(z+0.5)*(z-0.5)*f_s
+    f_l = f_s
+    bcs = DirichletBC(V, y/10., [1,2,4])
+    ic = Function(V).interpolate(y/10.)
+elif case == "oscillatingsourceBel3D":
+    expr1 = (37 - 1000.*((x+0.5)**2 + (y-0.2)**2 + z**2))
+    f_s = cos(t/5.)*conditional(gt(0,expr1), 0, expr1)
+    f_l = f_s
+    expr2 = 0.1*(x-0.2)
+    bcs = DirichletBC(V, expr2, [1,2,3,4,5,6])
+    ic = Function(V).interpolate(expr2)
+elif case == "oscillatingsource3D":
+    #expr1 = (3.125 - 50.*((x+0.2)**2 + (y+0.5)**2 + (z)**2))
+    #expr2 = (3.125 - 50.*((x+0.2)**2 + (y-0.5)**2 + (z)**2))
+    #expr3 = (3.125 - 50.*((x)**2 + (y)**2 + (z-0.5)**2))
+    #f_s = cos(t/5.)*conditional(gt(0,expr1), 0, expr1) + sin(t/5.)*conditional(gt(0,expr2), 0, expr2) \
+    #        + sin(t/5.-2.*pi/5.)*conditional(gt(0,expr3), 0, expr3)
+    expr1 = 4.*(3.125 - 50.*((x+0.2)**2 + (y+0.5)**2 + (z-0.2)**2)) #radius 0.25
+    expr2 = 4.*(3.125 - 50.*((x+0.2)**2 + (y-0.5)**2 + (z+0.2)**2))
+   # expr3 = (3.125 - 50.*((x)**2 + (y)**2 + (z-0.5)**2))
+    f_s = cos(t/5.)*conditional(gt(0,expr1), 0, expr1) + sin(t/5.)*conditional(gt(0,expr2), 0, expr2)# \
+            #+ sin(t/5.-2.*pi/5.)*conditional(gt(0,expr3), 0, expr3)
+    f_l = f_s
+    expr3 = y/10.#+z/50.
+    bcs = DirichletBC(V, expr3, [1,2,4])
+    ic = Function(V).interpolate(expr3)
 elif case == "wedge":
     f_s = Constant(0.0)
     f_l = Constant(0.0)
     ic = Function(V).interpolate(Constant(0.3))
-    bcs = DirichletBC(V, Constant(-1), [1,3])
+    bcs = DirichletBC(V, Constant(-1), [1,3,5])
 elif case == "oscillatingcircle":
     alpha = 0.5 + sin(1.25*t)
     alpha_p = 1.25*cos(1.25*t)
@@ -1164,15 +1254,15 @@ elif case == "oscillatingcircle":
     bcs = DirichletBC(V, T_e, [2,3,4])
     ic = Function(V).interpolate(T_e)
 elif case == "cuspformation":
-    rr = sqrt(x**2+(y-2)**2)
+    rr = sqrt(x**2+(y-2)**2+ (z)**2) # or is it (z-2)?
     T0 = conditional(lt(rr,1), 1, 0)*conditional(gt(y,2), 0.25*(rr**2-1), 0) \
-            + conditional(lt(abs(x),1), 1, 0)*conditional(lt(y,2), 0.25*(x**2-1), 0) \
+            + conditional(lt(sqrt(x**2+z**2),1), 1, 0)*conditional(lt(y,2), 0.25*(x**2 + z**2 -1), 0) \
             + conditional(gt(rr,1), 1, 0)*conditional(gt(y,2), rr-1, 0) \
-            + conditional(gt(abs(x), 1), 1, 0)*conditional(lt(y,1), 5*(abs(x)-1), 0) \
-            + conditional(gt(abs(x), 1), 1, 0)*conditional(lt(abs(y-1.5),0.5), (abs(x)-1)*(3-2*cos(pi*(y-2))), 0)
+            + conditional(gt(sqrt(x**2+z**2), 1), 1, 0)*conditional(lt(y,1), 5*(sqrt(x**2+z**2)-1), 0) \
+            + conditional(gt(sqrt(x**2+z**2), 1), 1, 0)*conditional(lt(abs(y-1.5),0.5), (sqrt(x**2+z**2)-1)*(3-2*cos(pi*(y-2))), 0)
     f_s = Constant(0.0)
     f_l = Constant(0.0)
-    bcs = DirichletBC(V, T0*(1+t), [1,2,4])
+    bcs = DirichletBC(V, T0*(1+t), [1,2,4,5,6])
     ic = Function(V).interpolate(T0)
 
 
@@ -1244,8 +1334,8 @@ old = start
 #while(t<t_final):
 KK = 1
 k=0
-lits = []
 nits = []
+lits = []
 
 for i in range(0, int(args.num_tsteps)):
     if mesh.comm.rank == 0: print("Initial time: ", time, flush = True)
@@ -1256,19 +1346,21 @@ for i in range(0, int(args.num_tsteps)):
     T_.assign(T)
     k += 1
     if k == KK:
-        #pphi.assign(phi)
-        #outfile.write(T_, pphi)
+       # pphi.assign(phi)
+       # outfile.write(T_, pphi)
         k = 0
     time += dt.values()[0]
     t.assign(time + dt.values()[0])
     nits.append(solver.snes.getIterationNumber())
     lits.append(solver.snes.getLinearSolveIterations())
-    
-    
-if mesh.comm.rank == 0: 
+
+
+if mesh.comm.rank == 0:
     print("Total time taken: %s" % (now-start).total_seconds())
     print("Total linear iterations: %d" % sum(lits))
     print("Total nonlinear iterations: %d" % sum(nits))
+
+    
 dargs = vars(args)                                                                              
 if mesh.comm.rank == 0: 
     for x in dargs: 
