@@ -1117,7 +1117,7 @@ T = Function(V)
 T_ = Function(V, name = "T")
 s = TestFunction(V)
 
-t = Constant(args.tstep) #time
+t = Constant(0.0) #time
 
 x, y = SpatialCoordinate(mesh)
 
@@ -1165,14 +1165,14 @@ elif case == "oscillatingcircle":
     ic = Function(V).interpolate(T_e)
 elif case == "cuspformation":
     rr = sqrt(x**2+(y-2)**2)
-    T0 = conditional(lt(rr,1), 1, 0)*conditional(gt(y,2), 0.25*(rr**2-1), 0) \
+    T0 = conditional(le(rr,1), 1, 0)*conditional(ge(y,2), 0.25*(rr**2-1), 0) \
             + conditional(lt(abs(x),1), 1, 0)*conditional(lt(y,2), 0.25*(x**2-1), 0) \
-            + conditional(gt(rr,1), 1, 0)*conditional(gt(y,2), rr-1, 0) \
+            + conditional(gt(rr,1), 1, 0)*conditional(ge(y,2), rr-1, 0) \
             + conditional(gt(abs(x), 1), 1, 0)*conditional(lt(y,1), 5*(abs(x)-1), 0) \
-            + conditional(gt(abs(x), 1), 1, 0)*conditional(lt(abs(y-1.5),0.5), (abs(x)-1)*(3-2*cos(pi*(y-2))), 0)
+            + conditional(gt(abs(x), 1), 1, 0)*conditional(lt(y,2), conditional(ge(y,1), (abs(x)-1)*(3-2*cos(pi*(y-2))), 0), 0)
     f_s = Constant(0.0)
     f_l = Constant(0.0)
-    bcs = DirichletBC(V, T0*(1+t), [1,2,4])
+    bcs = DirichletBC(V, T0*(1.+t), [1,2,4])
     ic = Function(V).interpolate(T0)
 
 
@@ -1235,8 +1235,8 @@ pphi = Function(V, name = "Phi").assign(phi)
 
 
 
-#outfile = File("results/solution.pvd")
-#outfile.write(T_, pphi)
+outfile = File("results/solution.pvd")
+outfile.write(T_, pphi)
 time = 0.0
 #t_final = args.num_tsteps*dt.values()[0]
 start = datetime.now()
@@ -1249,6 +1249,7 @@ nits = []
 
 for i in range(0, int(args.num_tsteps)):
     if mesh.comm.rank == 0: print("Initial time: ", time, flush = True)
+    t.assign(time + dt.values()[0])
     solver.solve()
     now = datetime.now()
     if mesh.comm.rank == 0: print("Time taken: %s" % (now-old).total_seconds(), flush = True)
@@ -1256,11 +1257,10 @@ for i in range(0, int(args.num_tsteps)):
     T_.assign(T)
     k += 1
     if k == KK:
-        #pphi.assign(phi)
-        #outfile.write(T_, pphi)
+        pphi.assign(phi)
+        outfile.write(T_, pphi)
         k = 0
     time += dt.values()[0]
-    t.assign(time + dt.values()[0])
     nits.append(solver.snes.getIterationNumber())
     lits.append(solver.snes.getLinearSolveIterations())
     
